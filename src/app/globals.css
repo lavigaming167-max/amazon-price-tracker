@@ -1,29 +1,19 @@
 @import "tailwindcss";
 
-:root {
-  --background-base: #0A0C10;
-  --surface-card: #14171D;
-  --primary-text: #E8E9ED;
-  --muted-text: #6B7280;
-  --signal-green: #2F8F5B;
-  --accent-gold: #B08D57;
-}
+@theme {
+  --color-base: #FAFAF8;
+  --color-surface: #FFFFFF;
+  --color-primary: #14171D;
+  --color-muted: #6B7280;
+  --color-signal: #2F8F5B;
+  --color-accent: #B08D57;
 
-/* Utility classes for design tokens */
-.bg-base { background-color: var(--background-base); }
-.bg-surface { background-color: var(--surface-card); }
-.text-primary { color: var(--primary-text); }
-.text-muted { color: var(--muted-text); }
-.text-signal { color: var(--signal-green); }
-.accent { color: var(--accent-gold); }
-
-:root {
   --font-serif: "Fraunces", serif;
   --font-mono: "JetBrains Mono", monospace;
   --font-sans: "Inter", sans-serif;
 }
 
-/* Font utility classes */
+/* Custom classes (used directly in HTML, not in @apply) */
 .fraunces {
   font-family: var(--font-serif);
   font-weight: 900; /* Black/heavy weight */
@@ -36,26 +26,87 @@
   font-weight: 500; /* Medium weight */
 }
 
+/* Hairline rule - 1px */
+.hairline {
+  height: 1px;
+  background-color: var(--color-muted);
+  width: 100%;
+}
+
+/* Soft drop shadow for cards */
+.shadow-soft {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Hero mockup card float animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Button and card scale on hover */
+.hover-scale {
+  @apply transition-transform duration-200;
+}
+.hover-scale:hover {
+  @apply scale-[1.02];
+}
+.hover-scale:active {
+  @apply scale-[0.98];
+}
+
 /* Set base body styles */
 body {
-  background: var(--background-base);
-  color: var(--primary-text);
+  @apply bg-base text-primary;
   font-family: var(--font-sans);
   font-weight: 500;
 }
 
-/* Hairline rule - 1px */
-.hairline {
-  height: 1px;
-  background-color: var(--muted-text);
-  width: 100%;
+/* Navigation bar */
+.nav {
+  @apply bg-base/90 backdrop-blur-sm sticky top-0 z-50 border-b border-muted/20;
+  padding: 0.75rem 1rem;
+}
+.nav-content {
+  @apply flex items-center justify-between px-6 mx-auto max-w-7xl;
+}
+.nav-logo {
+  @apply font-serif font-black text-2xl text-primary;
+}
+.nav-links {
+  @apply flex space-x-6 text-sm font-sans font-medium;
+}
+.nav-link {
+  @apply text-muted hover:text-primary transition-colors duration-200;
+}
+.nav-link.active {
+  @apply text-primary;
+}
+.nav-cta {
+  @apply bg-accent hover:bg-accent/90 text-primary font-semibold py-2 px-4 rounded-lg transition-colors duration-200 transition-transform duration-200;
+}
+.nav-cta:hover {
+  @apply scale-[1.02];
+}
+.nav-cta:active {
+  @apply scale-[0.98];
 }
 
-/* Price drop animation - slow and deliberate settling */
-@keyframes priceDrop {
+/* Page load animations */
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(-10%);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -63,8 +114,81 @@ body {
   }
 }
 
-.animate-price-drop {
-  animation: priceDrop 2s ease-out forwards;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Animation classes */
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Stagger delays for How It Works steps */
+.how-it-works-animate .step:nth-child(1) {
+  animation-delay: 0ms;
+}
+.how-it-works-animate .step:nth-child(2) {
+  animation-delay: 80ms;
+}
+.how-it-works-animate .step:nth-child(3) {
+  animation-delay: 160ms;
+}
+
+/* Stagger delays for Plan cards */
+.plan-cards-animate .plan-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+.plan-cards-animate .plan-card:nth-child(2) {
+  animation-delay: 100ms;
+}
+
+/* Benefit grid styling */
+.benefit-grid {
+  @apply grid gap-6 md:grid-cols-2 lg:grid-cols-3;
+}
+.benefit-card {
+  @apply bg-surface rounded-lg p-6 flex flex-col items-center text-center transition-all duration-200 border border-muted/20;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  @apply hover:border-primary/50 transition-transform duration-200;
+}
+.benefit-card:hover {
+  @apply scale-[1.02];
+}
+.benefit-card:active {
+  @apply scale-[0.98];
+}
+.benefit-icon {
+  @apply h-8 w-8 text-signal mb-4 flex-shrink-0;
+}
+.benefit-headline {
+  @apply font-serif font-black text-lg text-primary mb-2;
+}
+.benefit-description {
+  @apply text-sm text-muted leading-relaxed;
+}
+
+/* FAQ accordion styling */
+.faq-section {
+  @apply mt-12;
+}
+.faq-item {
+  @apply border-b border-muted/20 last:border-b-0;
+}
+.faq-question {
+  @apply w-full flex justify-between items-center p-6 text-primary text-lg font-serif font-black hover:bg-base/50 transition-colors duration-200 cursor-pointer;
+}
+.faq-answer {
+  @apply overflow-hidden max-h-0 transition-all duration-300 ease-out;
+}
+.faq-answer.open {
+  @apply max-h-[200px] p-6 text-muted text-base leading-relaxed;
+}
+.faq-answer-content {
+  @apply font-sans font-medium;
 }
 
 /* Override Tailwind's default transitions for motion preferences */
@@ -75,4 +199,9 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Smooth scroll for navigation */
+html {
+  scroll-behavior: smooth;
 }
