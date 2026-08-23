@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+  # WhatsPrice
 
-## Getting Started
+Never miss an Amazon price drop again. Share a product link, and WhatsPrice tracks it for you — free via push notification, instant via WhatsApp on the paid plan.
 
-First, run the development server:
+🔗 **Live waitlist page:** [bit.ly/WhatsPRICE](https://bit.ly/WhatsPRICE)
+
+## What is this?
+
+WhatsPrice is an early-stage product for Indian Amazon shoppers who are tired of manually checking prices. No browser extension, no app to install — just share a link and get notified when the price changes.
+
+This repo currently contains the waitlist landing page. The full tracking product is in active development.
+
+## Status
+
+🚧 Early access — we're collecting signups before building the full product. Join the waitlist to be notified at launch.
+
+## Tech stack
+
+- [Next.js](https://nextjs.org/) (App Router)
+- [Supabase](https://supabase.com/) for waitlist storage
+- Deployed via Hostinger Horizons (live link above)
+
+## Running locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.local.example` to `.env.local` and add your Supabase credentials before running.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000) to view it.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Not affiliated
 
-## Learn More
+WhatsPrice is an independent project and is not affiliated with, endorsed by, or officially connected to Amazon or WhatsApp/Meta.
 
-To learn more about Next.js, take a look at the following resources:
+## Connect
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [X / Twitter](https://x.com/Lavi1212216)
+- [GitHub](https://github.com/lavigaming167-max)
