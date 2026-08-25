@@ -4,9 +4,9 @@ import { JetBrains_Mono } from 'next/font/google';
 import { Inter } from 'next/font/google';
 import "./globals.css";
 
-const fraunces = Fraunces({ weight: ['700', '900'], subsets: ['latin'] });
-const jetBrainsMono = JetBrains_Mono({ weight: ['400', '500'], subsets: ['latin'] });
-const inter = Inter({ weight: ['500'], subsets: ['latin'] });
+const fraunces = Fraunces({ weight: ['700', '900'], subsets: ['latin'], variable: '--font-serif' });
+const jetBrainsMono = JetBrains_Mono({ weight: ['400', '500'], subsets: ['latin'], variable: '--font-mono' });
+const inter = Inter({ weight: ['500'], subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: "Waitlist Landing Page",
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} min-h-full flex flex-col`}>
+      <body className={`${fraunces.className} ${jetBrainsMono.className} ${inter.className} min-h-full flex flex-col`}>
         {children}
       </body>
     </html>

@@ -8,18 +8,8 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [animatePrice, setAnimatePrice] = useState(false);
-  const [faqOpen, setFaqOpen] = useState<number | null>(null); // null = none open, number = index
 
   const priceRef = useRef<HTMLSpanElement>(null);
-
-  // Refs for animations
-  const heroTextContainer = useRef<HTMLDivElement>(null);
-  const heroImage = useRef<HTMLImageElement>(null);
-  const benefitSection = useRef<HTMLDivElement>(null);
-  const howItWorksSection = useRef<HTMLDivElement>(null);
-  const whyWhatsAppSection = useRef<HTMLDivElement>(null);
-  const planSection = useRef<HTMLDivElement>(null);
-  const faqSection = useRef<HTMLDivElement>(null);
 
   // Trigger price drop animation every 5 seconds (2s animation + 3s pause)
   useEffect(() => {
@@ -44,76 +34,23 @@ export default function Home() {
     }
   }, [animatePrice]);
 
-  // Page load animations for hero content
+  // Scroll-based animations
   useEffect(() => {
-    // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+        }
+      });
+    }, {
+      threshold: 0.1
+    });
 
-    // Animate hero text container (headline, subhead, form)
-    if (heroTextContainer.current) {
-      heroTextContainer.current.classList.add('animate-fade-in-up');
-    }
-    // Animate hero image with slight delay
-    if (heroImage.current) {
-      heroImage.current.classList.add('animate-fade-in');
-      heroImage.current.style.animationDelay = '150ms';
-    }
-  }, []);
+    // Observe all elements with scroll-animate class
+    const elements = document.querySelectorAll('.scroll-animate');
+    elements.forEach((el) => observer.observe(el));
 
-  // Scroll-triggered reveal animations
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
-    const observerOptions = {
-      threshold: 0.1, // Trigger when 10% of the element is visible
-      rootMargin: '0px 0px -50px 0px' // Slightly earlier trigger
-    };
-
-    const observeSection = (ref: React.RefObject<HTMLElement | null>, classNameToAdd: string): IntersectionObserver => {
-      // We assume ref.current is not null because we check before calling.
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            // ref.current is guaranteed non-null by the caller's check
-            ref.current!.classList.add(classNameToAdd);
-            observer.disconnect();
-          }
-        });
-      }, observerOptions);
-
-      observer.observe(ref.current!);
-      return observer;
-    };
-
-    const observers: IntersectionObserver[] = [];
-
-    // Observe Benefit section
-    if (benefitSection.current) {
-      observers.push(observeSection(benefitSection, 'animate-fade-in-up'));
-    }
-    // Observe How It Works section
-    if (howItWorksSection.current) {
-      observers.push(observeSection(howItWorksSection, 'how-it-works-animate'));
-    }
-    // Observe Why WhatsApp section
-    if (whyWhatsAppSection.current) {
-      observers.push(observeSection(whyWhatsAppSection, 'animate-fade-in-up'));
-    }
-    // Observe Choose Your Plan section
-    if (planSection.current) {
-      observers.push(observeSection(planSection, 'plan-cards-animate'));
-    }
-    // Observe FAQ section
-    if (faqSection.current) {
-      observers.push(observeSection(faqSection, 'animate-fade-in-up'));
-    }
-
-    // Cleanup observers
-    return () => {
-      observers.forEach(obs => obs.disconnect());
-    };
+    return () => observer.disconnect();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -164,21 +101,17 @@ export default function Home() {
     }
   };
 
-  const toggleFaq = (index: number) => {
-    setFaqOpen(faqOpen === index ? null : index);
-  };
-
   if (showThankYou) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-base px-6 py-12 text-center inter">
-        <h1 className="fraunces text-3xl font-bold text-primary mb-4">
-          Never miss an Amazon price drop again
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black px-6 py-12 text-center font-sans">
+        <h1 className="font-black text-3xl text-white mb-4">
+          NEVER MISS A PRICE DROP
         </h1>
-        <p className="text-lg text-muted mb-8">
-          Add a product, get pinged on WhatsApp the moment the price changes. Built for Indian shoppers.
+        <p className="text-lg text-gray-400 mb-8">
+          We track Amazon prices and notify you when they drop — free via push, instantly via WhatsApp on paid.
         </p>
-        <div className="bg-surface rounded-xl p-8 max-w-md w-full">
-          <h2 className="fraunces text-2xl font-semibold text-primary mb-4">
+        <div className="bg-gray-800 rounded-xl p-8 max-w-md w-full">
+          <h2 className="font-black text-2xl text-white mb-4">
             You're on the list — we'll email you when it's ready.
           </h2>
         </div>
@@ -187,29 +120,26 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-base">
+    <div className="min-h-screen flex flex-col bg-black">
       {/* Navigation Bar */}
       <nav className="nav">
         <div className="nav-content">
-          <div className="nav-logo">WhatsPrice</div>
-          <div className="nav-links hidden md:flex">
-            <a href="#how-it-works" className="nav-link">How it Works</a>
-            <a href="#pricing" className="nav-link">Pricing</a>
-            <a href="#faq" className="nav-link">FAQ</a>
+          <div className="nav-logo font-black text-3xl text-white">
+            WhatsPRICE
           </div>
           <button
             onClick={() => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' })}
-            className="text-muted hover:text-primary hover:underline px-2 py-1 hidden md:block transition-colors duration-200"
+            className="bg-accent hover:bg-accent/90 text-black font-semibold py-2 px-4 rounded-lg transition-colors duration-200 hover-scale hidden md:block"
           >
             Join Waitlist
           </button>
-          {/* Mobile menu button (optional, but we can keep simple) */}
+          {/* Mobile menu button (optional) */}
           <button
             id="mobile-menu-button"
             className="md:hidden p-2"
             aria-label="Open menu"
           >
-            <svg className="h-6 w-6 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="h-6 w-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M3 6h18M3 12h18M3 18h18"></path>
             </svg>
           </button>
@@ -219,110 +149,410 @@ export default function Home() {
       {/* Main content */}
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="space-y-8">
+          <div className="space-y-16">
             {/* Hero Section */}
-            <section id="hero">
-              <div className="relative">
-                <div className="grid grid-cols-1 md:grid-cols-2 md:items-center md:gap-8">
-                  {/* Image placeholder */}
-                  <div className="md:row-span-2 flex items-center justify-center mb-6 md:mb-0">
-                    {/*
-                      TODO: Replace '/hero-person.jpg' with actual photo of a person using phone casually
-                      Image should be candid, not corporate stock-photo stiff
-                    */}
-                    <img
-                      ref={heroImage}
-                      src="/hero-person.jpg"
-                      alt="Casual photo of person using smartphone"
-                      className="w-full h-[350px] object-cover rounded-lg shadow-soft"
-                    />
+            <section id="hero" className="relative scroll-animate">
+              <div className="grid grid-cols-1 md:grid-cols-2 md:items-center md:gap-8">
+                {/* Left side: text and form */}
+                <div className="space-y-6 text-center scroll-animate">
+                  {/* Two-line headline */}
+                  <div className="space-y-2">
+                    <span className="font-black text-3xl text-gray-400">
+                      NEVER MISS{' '}
+                    </span>
+                    <span className="font-black text-3xl text-accent">
+                      A PRICE DROP
+                    </span>
                   </div>
 
-                  {/* Text and form content */}
-                  <div ref={heroTextContainer} className="space-y-6">
-                    <div className="flex items-center space-x-2 text-xs font-medium uppercase text-muted mb-4">
-                      <div className="hairline w-4"></div>
-                      <span className="whitespace-nowrap">AMAZON INDIA · WHATSAPP ALERTS</span>
-                      <div className="hairline w-4"></div>
-                    </div>
-                    <h1 className="fraunces text-4xl font-black text-primary mb-2">
-                      Never miss an Amazon price drop again
-                    </h1>
-                    {/* Hairline rule under main headline */}
-                    <div className="hairline mb-4"></div>
-                    <p className="text-xl text-muted">
-                      Add a product, <strong>get pinged on WhatsApp the moment the price changes</strong>. Built for Indian shoppers.
-                    </p>
+                  {/* Subheadline */}
+                  <p className="text-lg text-gray-400 max-w-xl mx-auto">
+                    Share any Amazon product link with us, we will track it for you and notify you
+                  </p>
 
-                    {/* Trust/credibility row */}
-                    <p className="text-xs text-muted">
-  Building this in public — follow progress on <a href="https://x.com/Lavi1212216" className="underline hover:no-underline">X</a> · <a href="https://github.com/lavigaming167-max" className="underline hover:no-underline">GitHub</a>
-</p>
-
-                    {/* Animated price ticker card */}
-                    <div className="bg-surface rounded-lg p-4 flex items-center space-x-3">
-                      <span className="text-muted font-medium inter">Apple iPhone 15</span>
-                      <div className="flex flex-col items-end space-y-1">
-                        <span className={`jetBrainsMono text-muted line-through`}>
-                          ₹79,999
-                        </span>
-                        <span className={`jetBrainsMono text-signal ${animatePrice ? 'animate-price-drop' : ''}`}
-                              ref={priceRef}>
-                          ₹69,999
-                        </span>
+                  {/* Stat cards */}
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mt-6 scroll-animate">
+                    {/* Stat 1: Save up to ₹12,400 */}
+                    <div className="bg-gray-800 rounded-lg p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <span className="font-black text-2xl text-accent">₹12,400</span>
                       </div>
+                      <p className="text-sm text-gray-400">Save up to</p>
+                      {/* Circular progress ring */}
+                      <div className="relative w-12 h-12 mx-auto mt-2">
+                        <svg className="absolute inset-0" viewBox="0 0 36 36">
+                          <circle className="stroke-gray-600 stroke-4" cx="18" cy="18" r="15.91549430918954" fill="none" />
+                          <circle className={`stroke-accent stroke-4 ${animatePrice ? 'animate-price-drop' : ''}`} cx="18" cy="18" r="15.91549430918954" fill="none" strokeDasharray="75,100" />
+                        </svg>
+                                              </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-muted mb-2 inter">
-                          Email address
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="Enter your email"
-                          disabled={isSubmitting}
-                          className={`block w-full rounded-lg border border-muted px-4 py-3 text-primary
-                            focus:outline-none focus:ring-2 focus-ring-accent focus:border-accent
-                            ${error ? 'border-red-500 focus:ring-red-500' : ''}
-                            ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
-                        />
-                        {error && (
-                          <p className="mt-2 text-sm text-red-500">
-                            {error}
-                          </p>
-                        )}
-                      </div>
-
-                      <button
-                        type="submit"
-                        disabled={isSubmitting || !email}
-                        className={`w-full bg-accent hover:bg-accent/90 text-primary font-semibold py-3 px-4 rounded-lg
-                          transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover-scale
-                          ${isSubmitting ? 'opacity-75' : ''}`}
-                      >
-                        {isSubmitting ? 'Joining...' : 'Join the waitlist'}
-                      </button>
-                      <p className="text-xs text-muted whitespace-nowrap">
-                        Free to join · Takes 10 seconds · No spam, ever.
-                      </p>
-                    </form>
-                  </div>
-
-                  {/* Floating mockup card positioned over the image */}
-                  <div className="absolute -right-8 top-1/2 transform -translate-y-1/2 w-[220px] lg:right-0 lg:top-auto lg:bottom-0 lg:-translate-x-1/2 lg:translate-y-[20%] lg:-rotate-6 float-animation">
-                    <div className="bg-surface rounded-lg p-4 shadow-soft">
-                      <div className="flex items-start space-x-3">
-                        <svg className="h-5 w-5 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    {/* Stat 2: Zero Apps Needed / Just WhatsApp */}
+                    <div className="bg-gray-800 rounded-lg p-4 text-center">
+                      <div className="flex items-center justify-center mb-2">
+                        <svg className="h-6 w-6 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                         </svg>
-                        <div>
-                          <p className="text-sm font-medium text-primary">Price Drop Alert</p>
-                          <p className="text-xs text-muted">Apple iPhone 15 — now ₹69,999 (was ₹79,999)</p>
+                        <span className="ml-2 font-black text-lg">Just WhatsApp</span>
+                      </div>
+                      <p className="text-sm text-gray-400">ZERO EXTENSION NEEDED JUST ONE APP</p>
+                    </div>
+                  </div>
+
+                  {/* Email form */}
+                  <form onSubmit={handleSubmit} className="space-y-4 mt-6 scroll-animate">
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2 font-sans">
+                        Email address
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter your email"
+                        disabled={isSubmitting}
+                        className={`block w-full rounded-lg border border-gray-600 px-4 py-3 text-white
+                          focus:outline-none focus:ring-2 focus-ring-accent focus:border-accent
+                          ${error ? 'border-red-500 focus:ring-red-500' : ''}
+                          ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+                      />
+                      {error && (
+                        <p className="mt-2 text-sm text-red-500">
+                          {error}
+                        </p>
+                      )}
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !email}
+                      className={`w-full bg-accent hover:bg-accent/90 text-black font-semibold py-3 px-4 rounded-lg
+                        transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover-scale
+                        ${isSubmitting ? 'opacity-75' : ''}`}
+                    >
+                      {isSubmitting ? 'Joining...' : 'Join the waitlist'}
+                    </button>
+                    <p className="text-xs text-gray-400 whitespace-nowrap">
+                      Free to join · Takes 10 seconds · No spam, ever.
+                    </p>
+                  </form>
+                </div>
+
+                {/* Right side: dummy phone screens */}
+                <div className="hidden md:block scroll-animate">
+                  <div className="flex flex-row items-start gap-6">
+                    {/* Dummy Phone Screen 1: Price Drop Feature */}
+                    <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl h-[520px] w-[290px]">
+                      {/* Phone frame */}
+                      <div className="absolute inset-0 bg-gray-800 border-4 border-gray-700 rounded-xl">
+                        {/* Screen content */}
+                        <div className="relative h-full w-full bg-gray-900 p-4">
+                          {/* Status bar */}
+                          <div className="flex justify-between items-center mb-4">
+                            <div className="flex space-x-2">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            </div>
+                            <div className="flex items-center space-x-2 text-xs text-gray-400">
+                              <div className="w-0.5 h-2 bg-gray-400 rounded"></div>
+                              <div className="w-0.5 h-2 bg-gray-400 rounded"></div>
+                              <span className="whitespace-nowrap">9:41 AM</span>
+                              <div className="flex space-x-1">
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Main content */}
+                          <div className="flex-1">
+                            <div className="space-y-4">
+                              {/* App header */}
+                              <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-medium text-white">WhatsPRICE</h3>
+                                <button className="px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30">
+                                  Alerts
+                                </button>
+                              </div>
+
+                              {/* Price drop notification */}
+                              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                                <div className="flex items-start space-x-3">
+                                  <div className="flex-shrink-0">
+                                    <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center">
+                                      <span className="text-accent font-medium">🔔</span>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-white mb-1">Price Drop Alert!</p>
+                                    <p className="text-sm text-gray-300">Apple iPhone 15 Pro dropped to ₹99,999</p>
+                                    <div className="mt-2 flex items-baseline space-x-2 flex-wrap w-full">
+                                      <span className="font-mono text-[10px] line-through text-gray-400">₹1,29,999</span>
+                                      <span className="font-mono text-base text-accent">₹99,999</span>
+                                      <br />
+                                      <span className="mt-0.5 inline-block px-2 py-0.5 bg-accent/20 rounded text-xs text-accent">↓23%</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="mt-3 flex justify-end">
+                                  <button className="px-3 py-1 bg-accent hover:bg-accent/90 text-black rounded text-sm">
+                                    View Deal
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Tracked products list */}
+                              <div className="space-y-3">
+                                <div className="flex items-center space-x-3 bg-gray-800/50 p-3 rounded-lg">
+                                  <div className="flex-shrink-0">
+                                    <div className="w-6 h-6 bg-accent/20 rounded flex items-center justify-center">
+                                      <span className="text-accent">📱</span>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-white">Samsung Galaxy S24</p>
+                                    <p className="text-xs text-gray-300">Tracking price...</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-3 bg-gray-800/50 p-3 rounded-lg">
+                                  <div className="flex-shrink-0">
+                                    <div className="w-6 h-6 bg-accent/20 rounded flex items-center justify-center">
+                                      <span className="text-accent">👟</span>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-white">Nike Air Max 270</p>
+                                    <p className="text-xs text-gray-300">Tracking price...</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-3 bg-gray-800/50 p-3 rounded-lg">
+                                  <div className="flex-shrink-0">
+                                    <div className="w-6 h-6 bg-accent/20 rounded flex items-center justify-center">
+                                      <span className="text-accent">🔊</span>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-white">Sony WH-1000XM5</p>
+                                    <p className="text-xs text-gray-300">Tracking price...</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Bottom navigation */}
+                          <div className="flex items-center justify-between border-t border-gray-700 pt-4">
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">🏠</span>
+                              </span>
+                              <span>Home</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">🔍</span>
+                              </span>
+                              <span>Search</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">📊</span>
+                              </span>
+                              <span>Analytics</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">⚙️</span>
+                              </span>
+                              <span>Settings</span>
+                            </button>
+                          </div>
                         </div>
+                      </div>
+                      {/* Phone corners */}
+                      <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-2 left-2 w-2 h-2 bg-gray-600 rounded"></div>
+                        <div className="absolute top-2 right-2 w-2 h-2 bg-gray-600 rounded"></div>
+                        <div className="absolute bottom-2 left-2 w-2 h-2 bg-gray-600 rounded"></div>
+                        <div className="absolute bottom-2 right-2 w-2 h-2 bg-gray-600 rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Dummy Phone Screen 2: Products Tracked Box */}
+                    <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl h-[520px] w-[290px]">
+                      {/* Phone frame */}
+                      <div className="absolute inset-0 bg-gray-800 border-4 border-gray-700 rounded-xl">
+                        {/* Screen content */}
+                        <div className="relative h-full w-full bg-gray-900 p-4">
+                          {/* Status bar */}
+                          <div className="flex justify-between items-center mb-4">
+                            <div className="flex space-x-2">
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                              <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            </div>
+                            <div className="flex items-center space-x-2 text-xs text-gray-400">
+                              <div className="w-0.5 h-2 bg-gray-400 rounded"></div>
+                              <div className="w-0.5 h-2 bg-gray-400 rounded"></div>
+                              <span className="whitespace-nowrap">9:41 AM</span>
+                              <div className="flex space-x-1">
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                                <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Main content */}
+                          <div className="flex-1">
+                            <div className="space-y-4">
+                              {/* App header */}
+                              <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-medium text-white">WhatsPRICE</h3>
+                                <button className="px-3 py-1 bg-accent/20 text-accent rounded hover:bg-accent/30">
+                                  Edit
+                                </button>
+                              </div>
+
+                              {/* Tracked products box */}
+                              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                                <div className="space-y-4">
+                                  {/* Box header */}
+                                  <div className="flex items-center justify-between mb-3">
+                                    <h4 className="font-semibold text-white">Tracked Products (3)</h4>
+                                    <button className="px-3 py-1 bg-accent hover:bg-accent/90 text-black rounded text-sm">
+                                      Add Product
+                                    </button>
+                                  </div>
+
+                                  {/* Products list */}
+                                  <div className="space-y-3">
+                                    {/* Product 1 */}
+                                    <div className="flex items-start space-x-3 bg-gray-700/50 p-3 rounded-lg">
+                                      <div className="flex-shrink-0">
+                                        <div className="w-8 h-8 bg-gray-600/50 rounded flex items-center justify-center">
+                                          <span className="text-white">📱</span>
+                                        </div>
+                                      </div>
+                                      <div className="flex-1">
+                                        <p className="font-medium text-white mb-1">Apple iPhone 15 Pro</p>
+                                        <p className="flex items-baseline space-x-2 text-[10px] text-gray-300">
+                                          <span className="font-mono">Current: ₹1,09,999</span>
+                                          <span className="text-accent">•</span>
+                                          <span className="font-mono text-accent">Low: ₹99,999</span>
+                                        </p>
+                                      </div>
+                                      <div className="flex-shrink-0">
+                                        <button className="w-2 h-2 bg-accent/20 rounded flex items-center justify-center text-accent hover:bg-accent/30">
+                                          ⋮
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    {/* Product 2 */}
+                                    <div className="flex items-start space-x-3 bg-gray-700/50 p-3 rounded-lg">
+                                      <div className="flex-shrink-0">
+                                        <div className="w-8 h-8 bg-gray-600/50 rounded flex items-center justify-center">
+                                          <span className="text-white">👟</span>
+                                        </div>
+                                      </div>
+                                      <div className="flex-1">
+                                        <p className="font-medium text-white mb-1">Adidas Ultraboost 22</p>
+                                        <p className="flex items-baseline space-x-2 text-[10px] text-gray-300">
+                                          <span className="font-mono">Current: ₹12,999</span>
+                                          <span className="text-accent">•</span>
+                                          <span className="font-mono text-accent">Low: ₹10,999</span>
+                                        </p>
+                                      </div>
+                                      <div className="flex-shrink-0">
+                                        <button className="w-2 h-2 bg-accent/20 rounded flex items-center justify-center text-accent hover:bg-accent/30">
+                                          ⋮
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    {/* Product 3 */}
+                                    <div className="flex items-start space-x-3 bg-gray-700/50 p-3 rounded-lg">
+                                      <div className="flex-shrink-0">
+                                        <div className="w-8 h-8 bg-gray-600/50 rounded flex items-center justify-center">
+                                          <span className="text-white">🔊</span>
+                                        </div>
+                                      </div>
+                                      <div className="flex-1">
+                                        <p className="font-medium text-white mb-1">Bose QuietComfort 45</p>
+                                        <p className="flex items-baseline space-x-2 text-[10px] text-gray-300">
+                                          <span className="font-mono">Current: ₹24,999</span>
+                                          <span className="text-accent">•</span>
+                                          <span className="font-mono text-accent">Low: ₹21,999</span>
+                                        </p>
+                                      </div>
+                                      <div className="flex-shrink-0">
+                                        <button className="w-2 h-2 bg-accent/20 rounded flex items-center justify-center text-accent hover:bg-accent/30">
+                                          ⋮
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Price history chart placeholder */}
+                              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+                                <div className="space-y-3">
+                                  <p className="font-medium text-white mb-2">Price History (30 days)</p>
+                                  <div className="h-20 bg-gray-700/50 rounded-lg">
+                                    {/* Simple line chart representation */}
+                                    <div className="relative h-full w-full">
+                                      <div className="absolute bottom-0 left-0 h-[80%] w-[80%] bg-accent/50"></div>
+                                    </div>
+                                  </div>
+                                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                                    <span className="text-[10px]">₹1,29,999</span>
+                                    <span className="text-[10px]">₹99,999</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Bottom navigation */}
+                          <div className="flex items-center justify-between border-t border-gray-700 pt-4">
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">🏠</span>
+                              </span>
+                              <span>Home</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">📊</span>
+                              </span>
+                              <span>Analytics</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">⚙️</span>
+                              </span>
+                              <span>Settings</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white">
+                              <span className="w-3 h-3 bg-accent/20 rounded flex items-center justify-center">
+                                <span className="text-accent">👤</span>
+                              </span>
+                              <span>Profile</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Phone corners */}
+                      <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-2 left-2 w-2 h-2 bg-gray-600 rounded"></div>
+                        <div className="absolute top-2 right-2 w-2 h-2 bg-gray-600 rounded"></div>
+                        <div className="absolute bottom-2 left-2 w-2 h-2 bg-gray-600 rounded"></div>
+                        <div className="absolute bottom-2 right-2 w-2 h-2 bg-gray-600 rounded"></div>
                       </div>
                     </div>
                   </div>
@@ -330,307 +560,44 @@ export default function Home() {
               </div>
             </section>
 
-            {/* Why WhatsPrice Benefit Grid Section */}
-            <section id="why-whatsprice" ref={benefitSection} className="mt-12">
-              <h2 className="fraunces text-2xl font-bold text-primary mb-6 text-center">
-                Why WhatsPrice
+            {/* Price Tracking. Zero Effort. Section */}
+            <section id="how-it-works" className="text-center scroll-animate">
+              <h2 className="font-black text-3xl font-bold text-white mb-6">
+                PRICE TRACKING. ZERO EFFORT.
               </h2>
-              <div className="benefit-grid">
-                {/* Benefit Card 1 */}
-                <div className="benefit-card">
-                  <div className="benefit-icon">
-                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83-2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83 2.83M16.24 7.76l2.83-2.83"></path>
-                    </svg>
-                  </div>
-                  <h3 className="benefit-headline">No App to Download</h3>
-                  <p className="benefit-description">
-                    Works entirely <strong>through WhatsApp</strong>, the app you already use every day.
-                  </p>
-                </div>
 
-                {/* Benefit Card 2 */}
-                <div className="benefit-card">
-                  <div className="benefit-icon">
-                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 8v4l3 3"></path>
-                      <path d="M16 13H8a4 4 0 010-8h8"></path>
-                    </svg>
-                  </div>
-                  <h3 className="benefit-headline">Instant Alerts</h3>
-                  <p className="benefit-description">
-                    Get notified <strong>the moment a price actually drops</strong>, not hours later.
-                  </p>
-                </div>
-
-                {/* Benefit Card 3 */}
-                <div className="benefit-card">
-                  <div className="benefit-icon">
-                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 8v4l3 3M6 6h.01M18 6h.01"></path>
-                    </svg>
-                  </div>
-                  <h3 className="benefit-headline">Zero Manual Checking</h3>
-                  <p className="benefit-description">
-                    <strong>Share a link once</strong>. We handle the watching from there.
-                  </p>
-                </div>
-
-                {/* Benefit Card 4 */}
-                <div className="benefit-card">
-                  <div className="benefit-icon">
-                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M4 4v16a2 2 0 002 2h12a2 2 0 002-2V4"></path>
-                    </svg>
-                  </div>
-                  <h3 className="benefit-headline">Built for Amazon.in</h3>
-                  <p className="benefit-description">
-                    Designed specifically around <strong>Indian pricing and product listings</strong>.
-                  </p>
-                </div>
-
-                {/* Benefit Card 5 */}
-                <div className="benefit-card">
-                  <div className="benefit-icon">
-                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-3z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="benefit-headline">Simple Free Tier</h3>
-                  <p className="benefit-description">
-                    <strong>Track your first product free</strong>, no credit card required.
-                  </p>
-                </div>
-
-                {/* Benefit Card 6 */}
-                <div className="benefit-card">
-                  <div className="benefit-icon">
-                    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M9 12h6m2 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                  </div>
-                  <h3 className="benefit-headline">Unlimited on Paid</h3>
-                  <p className="benefit-description">
-                    Upgrade for <strong>unlimited tracked products</strong> and instant WhatsApp pings.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* How It Works Section */}
-            <section id="how-it-works" ref={howItWorksSection} className="mt-12">
-              <h2 className="fraunces text-2xl font-bold text-primary mb-6 text-center">
-                How It Works
-              </h2>
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
-                {/* Step 1 */}
-                <div className="step border-r md:border-b-0 md:border-r mb-8 md:mb-0 pb-8 md:pb-0 last:border-0">
-                  <div className="flex items-center justify-center mb-4">
-                    {/* Icon for step 1: link */}
-                    <svg className="h-8 w-8 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.72"></path>
-                    </svg>
-                    <div className="jetBrainsMono text-3xl font-bold text-primary mb-2 ml-3">01</div>
-                  </div>
-                  <h3 className="fraunces text-lg font-semibold text-primary mb-1">Share the link</h3>
-                  <p className="text-sm text-muted">Paste any Amazon.in product link, or forward it to us on WhatsApp</p>
-                </div>
-
-                {/* Step 2 */}
-                <div className="step border-r md:border-b-0 md:border-r mb-8 md:mb-0 pb-8 md:pb-0 last:border-0">
-                  <div className="flex items-center justify-center mb-4">
-                    {/* Icon for step 2: eye */}
-                    <svg className="h-8 w-8 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                    <div className="jetBrainsMono text-3xl font-bold text-primary mb-2 ml-3">02</div>
-                  </div>
-                  <h3 className="fraunces text-lg font-semibold text-primary mb-1">We track it</h3>
-                  <p className="text-sm text-muted">Our system checks the price automatically, no app or extension needed</p>
-                </div>
-
-                {/* Step 3 */}
-                <div className="step last:border-0">
-                  <div className="flex items-center justify-center mb-4">
-                    {/* Icon for step 3: bell */}
-                    <svg className="h-8 w-8 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <div className="jetBrainsMono text-3xl font-bold text-primary mb-2 ml-3">03</div>
-                  </div>
-                  <h3 className="fraunces text-lg font-semibold text-primary mb-1">Get pinged the moment it drops</h3>
-                  <p className="text-sm text-muted">Free users get a push notification, paid users get an instant WhatsApp message</p>
-                </div>
-              </div>
-            </section>
-
-            {/* Why WhatsApp Section */}
-            <section id="why-whatsapp" ref={whyWhatsAppSection} className="mt-12">
-              <div className="flex items-center justify-center space-x-3">
-                {/* WhatsApp icon */}
-                <svg className="h-8 w-8 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 12.189l-3.19.006a2 2 0 0 0-1.815.57l-.366 1.263v.001h-2.07l-.05.378A16.942 16.942 0 0 1 9.15 13c-4.002 0-7.251-2.954-7.774-6.98C1.424 3.85 3.819.787 7.826.787h2.04c1.257 0 2.473.433 3.38 1.157l.384.286v.001h1.00l.117.413c.086.302.27.594.527.855l1.506 1.506a2 2 0 0 0 .855.527l.413.117h.378v1.00l-.286.384c-.724.907-1.157 2.123-1.157 3.38v2.04c0 4.007 2.954 7.256 6.98 7.774a16.97 16.97 0 0 0 6.98-1.774l.378-.05v2.07l-1.263.366a2 2 0 0 0-.57 1.815l-.006 3.19a2 2 0 0 1-1.815.57z"></path>
-                </svg>
-                <div className="text-center">
-                  <h2 className="fraunces text-2xl font-bold text-primary">
-                    Tired of juggling multiple apps for price alerts?
-                  </h2>
-                  <p className="text-muted">
-                    You find a great deal, add it to your cart, then forget to check <strong>if the price ever drops</strong>.
-                  </p>
-                  <p className="text-muted">
-                    By the time you remember, the deal's <strong>gone</strong> — or you paid more than you needed to.
-                  </p>
-                  <p className="text-muted">
-                    <strong>We send the alert straight to WhatsApp</strong> — the one app you already have open.
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Free vs Paid Preview Section */}
-            <section id="pricing" ref={planSection} className="mt-12">
-              <h2 className="fraunces text-2xl font-bold text-primary mb-6 text-center">
-                Choose Your Plan
-              </h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {/* Free Column */}
-                <div className="plan-card p-6 bg-surface rounded-lg shadow-soft border border-muted hover:border-primary transition-all duration-200 ease-in-out cursor-pointer hover-scale">
-                  <h3 className="fraunces text-lg font-semibold text-primary mb-3">Free</h3>
-                  <p className="text-muted space-y-2">
-                    Push notifications<br className="hidden md:inline"/>· 1 product tracked
-                  </p>
-                </div>
-
-                {/* Paid Column */}
-                <div className="plan-card p-6 bg-surface rounded-lg shadow-soft border border-accent/20 hover:border-accent transition-all duration-200 ease-in-out cursor-pointer hover-scale">
-                  <h3 className="fraunces text-lg font-semibold text-primary mb-3">Paid</h3>
-                  <p className="text-muted space-y-2">
-                    WhatsApp alerts<br className="hidden md:inline"/>· Unlimited products
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* FAQ Accordion Section */}
-            <section id="faq" ref={faqSection} className="faq-section">
-              <h2 className="fraunces text-2xl font-bold text-primary mb-6 text-center">
-                FAQ
-              </h2>
-              <div className="space-y-2">
-                {/* FAQ Item 1 */}
-                <div className="faq-item">
-                  <div
-                    className={`faq-question ${faqOpen === 0 ? 'open-bg' : ''}`}
-                    onClick={() => toggleFaq(0)}
-                  >
-                    <span>Is this affiliated with Amazon or WhatsApp?</span>
-                    <svg className={`h-4 w-4 text-muted transition-transform duration-200 ${faqOpen === 0 ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6"></path>
-                    </svg>
-                  </div>
-                  <div className={`faq-answer ${faqOpen === 0 ? 'open' : ''}`}>
-                    <div className="faq-answer-content">
-                      No, WhatsPrice is an <strong>independent tool</strong>. We are not affiliated with, endorsed by, or officially connected to Amazon or WhatsApp/Meta.
-                    </div>
-                  </div>
-                </div>
-
-                {/* FAQ Item 2 */}
-                <div className="faq-item">
-                  <div
-                    className={`faq-question ${faqOpen === 1 ? 'open-bg' : ''}`}
-                    onClick={() => toggleFaq(1)}
-                  >
-                    <span>Is the free tier really free?</span>
-                    <svg className={`h-4 w-4 text-muted transition-transform duration-200 ${faqOpen === 1 ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6"></path>
-                    </svg>
-                  </div>
-                  <div className={`faq-answer ${faqOpen === 1 ? 'open' : ''}`}>
-                    <div className="faq-answer-content">
-                      Yes. Free users can <strong>track one product</strong> and receive push notifications at no cost.
-                    </div>
-                  </div>
-                </div>
-
-                {/* FAQ Item 3 */}
-                <div className="faq-item">
-                  <div
-                    className={`faq-question ${faqOpen === 2 ? 'open-bg' : ''}`}
-                    onClick={() => toggleFaq(2)}
-                  >
-                    <span>How fast are price-drop alerts?</span>
-                    <svg className={`h-4 w-4 text-muted transition-transform duration-200 ${faqOpen === 2 ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6"></path>
-                    </svg>
-                  </div>
-                  <div className={`faq-answer ${faqOpen === 2 ? 'open' : ''}`}>
-                    <div className="faq-answer-content">
-                      We check prices on a regular schedule and notify you <strong>change is detected</strong>.
-                    </div>
-                  </div>
-                </div>
-
-                {/* FAQ Item 4 */}
-                <div className="faq-item">
-                  <div
-                    className={`faq-question ${faqOpen === 3 ? 'open-bg' : ''}`}
-                    onClick={() => toggleFaq(3)}
-                  >
-                    <span>Do I need to install anything?</span>
-                    <svg className={`h-4 w-4 text-muted transition-transform duration-200 ${faqOpen === 3 ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6"></path>
-                    </svg>
-                  </div>
-                  <div className={`faq-answer ${faqOpen === 3 ? 'open' : ''}`}>
-                    <div className="faq-answer-content">
-                      <strong>No app or browser extension is required</strong>. Just share a product link to get started.
-                    </div>
-                  </div>
-                </div>
-
-                {/* FAQ Item 5 */}
-                <div className="faq-item">
-                  <div
-                    className={`faq-question ${faqOpen === 4 ? 'open-bg' : ''}`}
-                    onClick={() => toggleFaq(4)}
-                  >
-                    <span>When does this launch?</span>
-                    <svg className={`h-4 w-4 text-muted transition-transform duration-200 ${faqOpen === 4 ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 9l6 6 6-6"></path>
-                    </svg>
-                  </div>
-                  <div className={`faq-answer ${faqOpen === 4 ? 'open' : ''}`}>
-                    <div className="faq-answer-content">
-                      We're in early access. Join the waitlist above and we'll email you as soon as it's ready.
-                    </div>
+              {/* Latest Alert notification example */}
+              <div className="bg-gray-800 rounded-lg p-6 max-w-xl mx-auto mb-6">
+                <div className="flex items-start space-x-3">
+                  <svg className="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  </svg>
+                  <div>
+                    <p className="font-black text-lg text-white mb-1">Price Drop Alert</p>
+                    <p className="text-gray-400">iPhone 15 just dropped to ₹69,999 — 12% off!</p>
                   </div>
                 </div>
               </div>
-            </section>
 
-            {/* Final CTA Section */}
-            <div className="mt-16 text-center space-y-6">
-              <p className="text-muted">
-                Be first to know when we launch.
+              {/* Explanation */}
+              <p className="text-lg text-gray-400 max-w-xl mx-auto mb-8">
+                Send us a product link. We track the price. You get notified — free via push, instantly via WhatsApp if you upgrade.
               </p>
-              <form onSubmit={handleSubmit} className="space-y-4 max-w-md w-full mx-auto">
+
+              {/* Second email capture form */}
+              <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto">
                 <div>
-                  <label htmlFor="email-final" className="block text-sm font-medium text-muted mb-2 inter">
+                  <label htmlFor="email2" className="block text-sm font-medium text-gray-400 mb-2 font-sans">
                     Email address
                   </label>
                   <input
                     type="email"
-                    id="email-final"
+                    id="email2"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     disabled={isSubmitting}
-                    className={`block w-full rounded-lg border border-muted px-4 py-3 text-primary
+                    className={`block w-full rounded-lg border border-gray-600 px-4 py-3 text-white
                       focus:outline-none focus:ring-2 focus-ring-accent focus:border-accent
                       ${error ? 'border-red-500 focus:ring-red-500' : ''}
                       ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
@@ -645,17 +612,132 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={isSubmitting || !email}
-                  className={`w-full bg-accent hover:bg-accent/90 text-primary font-semibold py-3 px-4 rounded-lg
+                  className={`w-full bg-accent hover:bg-accent/90 text-black font-semibold py-3 px-4 rounded-lg
                     transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover-scale
                     ${isSubmitting ? 'opacity-75' : ''}`}
                 >
                   {isSubmitting ? 'Joining...' : 'Join the waitlist'}
                 </button>
-                <p className="text-xs text-muted whitespace-nowrap">
+                <p className="text-xs text-gray-400 whitespace-nowrap">
                   Free to join · Takes 10 seconds · No spam, ever.
                 </p>
               </form>
-            </div>
+            </section>
+
+            {/* Pricing Section */}
+            <section id="pricing" className="text-center scroll-animate">
+              <h2 className="font-black text-3xl font-bold text-white mb-6">
+                CHOOSE YOUR PLAN
+              </h2>
+
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {/* Free Card */}
+                <div className="bg-gray-800 rounded-lg p-6 shadow-soft border border-gray-600 hover:border-accent transition-all duration-200 hover-scale">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center mb-3">
+                      <span className="font-black text-2xl text-white">Free</span>
+                    </div>
+                    <p className="text-gray-400">Perfect for trying it out</p>
+
+                    <ul className="space-y-4 text-left mt-4">
+                      <li className="flex items-start space-x-2">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-accent mt-0.5">
+                          ✓
+                        </div>
+                        <span className="text-gray-400">Push notifications</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-accent mt-0.5">
+                          ✓
+                        </div>
+                        <span className="text-gray-400">Track 1 product</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-accent mt-0.5">
+                          ✓
+                        </div>
+                        <span className="text-gray-400">Price history</span>
+                      </li>
+                    </ul>
+
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-full mt-6 bg-accent hover:bg-accent/90 text-black font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed hover-scale"
+                    >
+                      Join Free
+                    </button>
+                  </div>
+                </div>
+
+                {/* Pro Card */}
+                <div className="bg-gray-800 rounded-lg p-6 shadow-soft border border-accent hover:border-accent transition-all duration-200 hover-scale scale-[1.02]">
+                  <div className="relative">
+                    <span className="absolute -top-2 -right-2 bg-accent/20 text-xs font-medium px-2 py-0.5 rounded">
+                      Most Popular
+                    </span>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center mb-3">
+                      <span className="font-black text-2xl text-white">Pro</span>
+                    </div>
+                    <p className="text-gray-400">Coming Soon</p>
+                    <p className="text-gray-400">For serious deal hunters</p>
+
+                    <ul className="space-y-4 text-left mt-4">
+                      <li className="flex items-start space-x-2">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-accent mt-0.5">
+                          ✓
+                        </div>
+                        <span className="text-gray-400">WhatsApp instant alerts</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-accent mt-0.5">
+                          ✓
+                        </div>
+                        <span className="text-gray-400">Unlimited products tracked</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-accent mt-0.5">
+                          ✓
+                        </div>
+                        <span className="text-gray-400">Priority support</span>
+                      </li>
+                    </ul>
+
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-full mt-6 border border-accent/20 hover:border-accent text-accent font-semibold py-3 px-4 rounded-lg transition-colors hover-scale"
+                    >
+                      Notify Me
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="mt-16 text-center text-gray-400 text-sm font-sans scroll-animate">
+              <p className="font-black text-lg text-white">
+                WhatsPRICE
+              </p>
+              <p className="mb-2">
+                Not affiliated with Amazon or WhatsApp/Meta
+              </p>
+              <div className="space-y-1">
+                <a href="https://x.com/Lavi1212216" className="underline hover:no-underline">
+                  X
+                </a>
+                <a href="https://github.com/lavigaming167-max" className="underline hover:no-underline">
+                  GitHub
+                </a>
+              </div>
+            </footer>
           </div>
         </div>
       </main>

@@ -1,0 +1,332 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4.3%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 13.3%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 13.3%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 74 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 13.3%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 74 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 74 100% 50%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 4.3%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 74 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 13.3%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 74 100% 50%;
+  }
+
+  .dark {
+    --background: 0 0% 4.3%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 13.3%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 13.3%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 74 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 13.3%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 74 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 74 100% 50%;
+    --sidebar-background: 0 0% 4.3%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 74 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 13.3%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 74 100% 50%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Archivo Black', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-black leading-tight;
+    text-wrap: balance;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl font-black leading-tight;
+    text-wrap: balance;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl font-black leading-snug;
+    text-wrap: balance;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+}
+
+@layer utilities {
+  .noise-texture {
+    position: relative;
+  }
+
+  .noise-texture::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 1;
+  }
+
+  .noise-texture > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .glow-lime {
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .glow-lime:hover {
+    box-shadow: 0 0 30px rgba(204, 255, 0, 0.6), 0 0 60px rgba(204, 255, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .glow-lime:active {
+    transform: scale(0.98);
+  }
+
+  .gradient-lime {
+    background: linear-gradient(135deg, hsl(74, 100%, 50%) 0%, hsl(74, 100%, 40%) 100%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  /* Toaster Container Styles */
+  [data-sonner-toaster] {
+    font-family: 'Inter', sans-serif;
+  }
+
+  [data-sonner-toast] {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--accent) / 0.3);
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 0 20px rgba(204, 255, 0, 0.2), 0 10px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    animation: toast-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-sonner-toast][data-styled="true"] {
+    background: hsl(var(--card));
+  }
+
+  [data-sonner-toast][data-mounted="true"] {
+    animation: toast-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-sonner-toast][data-removed="true"] {
+    animation: toast-slide-out 0.2s cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  [data-sonner-toast][data-swiping="true"] {
+    transition: transform 0.2s ease-out;
+  }
+
+  /* Toast Title */
+  [data-sonner-toast] [data-title] {
+    color: hsl(var(--foreground));
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+
+  /* Toast Description */
+  [data-sonner-toast] [data-description] {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-top: 0.25rem;
+  }
+
+  /* Toast Icon */
+  [data-sonner-toast] [data-icon] {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  /* Success Toast */
+  [data-sonner-toast][data-type="success"] {
+    border-color: hsl(var(--accent) / 0.5);
+    box-shadow: 0 0 25px rgba(204, 255, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  [data-sonner-toast][data-type="success"] [data-icon] {
+    color: hsl(var(--accent));
+  }
+
+  /* Error Toast */
+  [data-sonner-toast][data-type="error"] {
+    border-color: hsl(var(--destructive) / 0.5);
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.2), 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  [data-sonner-toast][data-type="error"] [data-icon] {
+    color: hsl(var(--destructive));
+  }
+
+  /* Info Toast */
+  [data-sonner-toast][data-type="info"] {
+    border-color: hsl(var(--accent) / 0.3);
+  }
+
+  [data-sonner-toast][data-type="info"] [data-icon] {
+    color: hsl(var(--accent));
+  }
+
+  /* Close Button */
+  [data-sonner-toast] [data-close-button] {
+    background: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    border-radius: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  [data-sonner-toast] [data-close-button]:hover {
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    border-color: hsl(var(--accent));
+  }
+
+  /* Toast Animations */
+  @keyframes toast-slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toast-slide-out {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Loading Spinner */
+  [data-sonner-toast] [data-icon] svg {
+    animation: toast-spin 1s linear infinite;
+  }
+
+  @keyframes toast-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Action Button */
+  [data-sonner-toast] [data-button] {
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  [data-sonner-toast] [data-button]:hover {
+    background: hsl(var(--accent) / 0.9);
+    transform: translateY(-1px);
+  }
+
+  [data-sonner-toast] [data-button]:active {
+    transform: scale(0.98);
+  }
+
+  /* Cancel Button */
+  [data-sonner-toast] [data-cancel] {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  [data-sonner-toast] [data-cancel]:hover {
+    background: hsl(var(--muted) / 0.8);
+  }
+}

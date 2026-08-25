@@ -4,7 +4,19 @@ Never miss an Amazon price drop again. Share a product link, and WhatsPrice trac
 
 🔗 **Live waitlist page:** [bit.ly/WhatsPRICE](https://bit.ly/WhatsPRICE)
 
+<<<<<<< HEAD
 ## What is this?
+=======
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+🔗 **Live waitlist page:** [bit.ly/WhatsPRICE](https://bit.ly/WhatsPRICE)
+```
+>>>>>>> b51cc76 (Initial waitlist commit)
 
 WhatsPrice is an early-stage product for Indian Amazon shoppers who are tired of manually checking prices. No browser extension, no app to install — just share a link and get notified when the price changes.
 
