@@ -1,6 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function Home() {
   const [email, setEmail] = useState('');
@@ -71,28 +78,22 @@ export default function Home() {
       const urlParams = new URLSearchParams(window.location.search);
       const source = urlParams.get('src') || 'direct';
 
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, source }),
-      });
+      const { data: supabaseData, error } = await supabase
+        .from('waitlist')
+        .insert([{ email, source }]);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setShowThankYou(true);
-        setEmail('');
-      } else {
-        // Handle duplicate email or other validation errors
-        if (data.error) {
-          setError(data.error);
-        } else {
-          // For duplicate emails, show thank you state
+      if (error) {
+        console.error("Supabase Error:", error);
+        // Handle duplicate email gracefully
+        if (error.code === '23505') { // Unique violation
           setShowThankYou(true);
           setEmail('');
+        } else {
+          setError(error.message || 'Something went wrong. Please try again.');
         }
+      } else {
+        setShowThankYou(true);
+        setEmail('');
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
