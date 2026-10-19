@@ -26,9 +26,8 @@ WhatsPrice is an early-stage product for Indian Amazon shoppers who are tired of
 
 ## Tech stack
 
-- Frontend built with AI-assisted tools
-- [Supabase](https://supabase.com/) for waitlist storage
-- Live at the link above
+- Frontend built with Claude
+- [Supabase](https://supabase.com/) for backend
 
 ## Not affiliated
 
