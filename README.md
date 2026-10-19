@@ -2,7 +2,7 @@
 
 Never miss an Amazon price drop again. Share a product link, and WhatsPrice tracks it for you — free via push notification, instant via WhatsApp on the paid plan.
 
-🔗 **Live waitlist page:** [bit.ly/WhatsPRICE](https://bit.ly/WhatsPRICE)
+🔗 **Live waitlist page:** https://whatsprice.netlify.app/
 
 <<<<<<< HEAD
 ## What is this?
